@@ -1,14 +1,26 @@
 /**
  *
  */
-
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncurses.h>
+#include <errno.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <wchar.h>
+#include <wctype.h>
+#include <unistd.h>
+#include <signal.h>
+#include <time.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include "term.h"
 #include "edit.h"
 
 void term_die(const char *msg)
 {
-    perror(msg);
     term_close();
+    perror(msg);
     exit(1);
 }
 
@@ -17,26 +29,34 @@ void term_init()
     setlocale(LC_ALL, "");
     initscr(); // start ncurses
     raw();
-    getmaxyx(stdscr, M.screen_rows, M.screen_cols);    
-    noecho();  // don't echo keystrokes
+    getmaxyx(stdscr, ES.screen_rows, ES.screen_cols);
+    noecho(); // don't echo keystrokes
     nonl();
     intrflush(stdscr, false);
-    keypad(stdscr, TRUE); // enable special keys    
+    keypad(stdscr, TRUE); // enable special keys
 
-    if(has_colors() == true) {
+    if (has_colors() == true) {
         start_color();
     }
 
     init_pair(1, COLOR_BLACK, COLOR_WHITE);
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(4, COLOR_BLUE, COLOR_BLACK);
+    init_pair(5, COLOR_CYAN, COLOR_BLACK);
+    init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(7, COLOR_WHITE, COLOR_BLACK);
 
-    M.edit_rows = M.screen_rows - 2;
-    M.edit_cols = M.screen_cols;
-    M.cursor_x = 0;
-    M.cursor_y = 0;
-    M.row_offset = 0;
-    M.num_rows = 0;
-    M.config.use_spaces_as_tabs = true;
-    M.config.spaces_as_tab_count = 8;
+    ES.edit_rows = ES.screen_rows - 2;
+    ES.edit_cols = ES.screen_cols;
+    ES.cursor_x = 0;
+    ES.cursor_y = 0;
+    ES.row_offset = 0;
+    ES.num_rows = 0;
+    ES.dirty = 0;
+    ES.config.use_spaces_as_tabs = true;
+    ES.filename = NULL;
+    ES.config.spaces_as_tab_count = 8;
 }
 
 void term_close()

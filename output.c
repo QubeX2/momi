@@ -3,19 +3,23 @@
  */
 #define _XOPEN_SOURCE_EXTENDED
 #include <ncurses.h>
+#include <stdint.h>
 #include "output.h"
 #include "edit.h"
 
 void out_rewdraw_screen()
 {
-    for(int y = 0; y < M.edit_rows; y++) {
-        int row = y + M.row_offset;
-        if(row >= M.num_rows) {
+    for(uint32_t y = 0; y < ES.edit_rows; y++) {
+        uint32_t row = y + ES.row_offset;
+        if(row >= ES.num_rows) {
             mvaddwstr(y,0,L"~");
+        } else {
+            mvaddwstr(y,0,ES.rows[y].chars);
         }
     }
-    out_status_bar(L" File: %ls --- X:%d Y:%d W:%d H:%d", M.filename == NULL ? L"[No name]" : M.filename, M.cursor_x, M.cursor_y, M.screen_cols, M.screen_rows);
-    move(M.cursor_y, M.cursor_x);
+
+    out_status_bar(L" File: %ls --- X:%d Y:%d W:%d H:%d", ES.filename == NULL ? L"[No name]" : ES.filename, ES.cursor_x, ES.cursor_y, ES.screen_cols, ES.screen_rows);
+    move(ES.cursor_y, ES.cursor_x);
     out_refresh();
 }
 
@@ -26,23 +30,23 @@ void out_status_bar(const wchar_t *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    wchar_t msg[M.screen_cols + 1];
-    wmemset(msg, '\0', M.screen_cols);
+    wchar_t msg[ES.screen_cols + 1];
+    wmemset(msg, '\0', ES.screen_cols);
     vswprintf(msg, sizeof(msg), fmt, ap);
     va_end(ap);
 
-    for(int i=0;i<M.screen_cols;i++) {
+    for(uint32_t i=0;i<ES.screen_cols;i++) {
         if(msg[i] == '\0') {
             msg[i] = ' ';
         }
     }
-    msg[M.screen_cols] = '\0';
+    msg[ES.screen_cols] = '\0';
     attron(COLOR_PAIR(1));
-    mvaddwstr(M.screen_rows - 2, 0, msg);
+    mvaddwstr(ES.screen_rows - 2, 0, msg);
     attroff(COLOR_PAIR(1));
 
-    if(time(NULL) - M.status_msg_time < 5) {
-        mvaddwstr(M.screen_rows - 1, 0, M.status_msg);
+    if(time(NULL) - ES.status_msg_time < 5) {
+        mvaddwstr(ES.screen_rows - 1, 0, ES.status_msg);
     }
 
 }
@@ -54,17 +58,18 @@ void out_status_message(const wchar_t *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    wmemset(M.status_msg, '\0', sizeof(M.status_msg));
-    vswprintf(M.status_msg, sizeof(M.status_msg), fmt, ap);
+    size_t size = sizeof(ES.status_msg) / sizeof(wchar_t);
+    wmemset(ES.status_msg, '\0', size);
+    vswprintf(ES.status_msg, size, fmt, ap);
     va_end(ap);
 
-    for(int i=0; i< (int) (sizeof(M.status_msg) / sizeof(wchar_t)); i++) {
-        if(M.status_msg[i] == '\0') {
-            M.status_msg[i] = ' ';
+    for(int i=0; i< (int) size; i++) {
+        if(ES.status_msg[i] == '\0') {
+            ES.status_msg[i] = ' ';
         }
     }
-    M.status_msg[sizeof(M.status_msg)/sizeof(wchar_t) - 1] = '\0';
-    M.status_msg_time = time(NULL);
+    ES.status_msg[size] = '\0';
+    ES.status_msg_time = time(NULL);
 }
 
 /**

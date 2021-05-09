@@ -2,6 +2,8 @@
  * MOMI Editor by QubeX2
  * email: qubex2@gmail.com
  */
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncurses.h>
 #include "term.h"
 #include "input.h"
 #include "output.h"
@@ -21,8 +23,8 @@ int main(int argc, char *argv[])
     while(1) {
         out_rewdraw_screen();
         in_process_keypress();
-        if(is_term_resized(M.screen_rows, M.screen_cols)) {
-            getmaxyx(stdscr, M.screen_rows, M.screen_cols);
+        if(is_term_resized(ES.screen_rows, ES.screen_cols)) {
+            getmaxyx(stdscr, ES.screen_rows, ES.screen_cols);
         }
     }
 
