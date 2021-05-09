@@ -20,10 +20,10 @@ void term_init()
     getmaxyx(stdscr, M.screen_rows, M.screen_cols);    
     noecho();  // don't echo keystrokes
     nonl();
-    intrflush(stdscr, FALSE);
+    intrflush(stdscr, false);
     keypad(stdscr, TRUE); // enable special keys    
 
-    if(has_colors() == TRUE) {
+    if(has_colors() == true) {
         start_color();
     }
 
@@ -35,6 +35,8 @@ void term_init()
     M.cursor_y = 0;
     M.row_offset = 0;
     M.num_rows = 0;
+    M.config.use_spaces_as_tabs = true;
+    M.config.spaces_as_tab_count = 8;
 }
 
 void term_close()

@@ -20,7 +20,8 @@ typedef struct edit_state_st {
     row_st *rows;
     wchar_t status_msg[80];
     time_t status_msg_time;
-    config_st settings;
+    wchar_t *filename;
+    config_st config;
 } edit_state_st;
 
 extern edit_state_st M;

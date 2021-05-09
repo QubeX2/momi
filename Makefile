@@ -4,7 +4,7 @@ CFLAGS= -Wall -Wextra -Werror -Wfloat-equal -O2 -g -I/usr/local/opt/ncurses/incl
 LFLAGS=-L/usr/local/opt/ncurses/lib
 LIBS=-lncursesw
 # LIBS= -lm
-SRCS=momi.c term.c row.c edit.c input.c output.c config.c
+SRCS=momi.c term.c row.c edit.c input.c output.c config.c file.c
 OBJS=$(SRCS:%.c=$(OUTDIR)/%.o)
 MAIN=momi
 OUTDIR=bin

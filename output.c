@@ -14,7 +14,7 @@ void out_rewdraw_screen()
             mvaddwstr(y,0,L"~");
         }
     }
-    out_status_bar(L"X:%d Y:%d W:%d H:%d", M.cursor_x, M.cursor_y, M.screen_cols, M.screen_rows);
+    out_status_bar(L" File: %ls --- X:%d Y:%d W:%d H:%d", M.filename == NULL ? L"[No name]" : M.filename, M.cursor_x, M.cursor_y, M.screen_cols, M.screen_rows);
     move(M.cursor_y, M.cursor_x);
     out_refresh();
 }

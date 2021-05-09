@@ -6,12 +6,17 @@
 #include "input.h"
 #include "output.h"
 #include "edit.h"
+#include "file.h"
 
 #define MOMI_VERSION "0.0.1"
 
-int main() 
+int main(int argc, char *argv[]) 
 {
     term_init();
+
+    if(argc >= 2) {
+        file_open(argv[1]);
+    }
 
     while(1) {
         out_rewdraw_screen();
