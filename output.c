@@ -8,17 +8,41 @@
 #include "edit.h"
 #include "buffer.h"
 
+/**
+ * 
+ */
+void out_scroll()
+{
+    //buffer_st *buffer = buffer_get_current();
+    /*
+    if(buffer->cursor_y < buffer->row_offset) {
+        buffer->row_offset = buffer->cursor_y;
+    }
+    if(buffer->cursor_y >= buffer->row_offset + ES.edit_rows) {
+        buffer->row_offset = buffer->cursor_y - ES.edit_rows + 1;
+    }
+    */
+    //out_status_message(L"row_offset: %d, cursor_y: %d", buffer->row_offset, buffer->cursor_y);
+
+}
+
+/**
+ * 
+ */
 void out_rewdraw_screen()
 {
+    out_scroll();
+
     buffer_st *buffer = buffer_get_current();
 
     for(uint32_t y = 0; y < ES.edit_rows; y++) {
-        uint32_t row = y + buffer->row_offset;
-        if(row >= buffer->num_rows) {
+        uint32_t line = y + buffer->row_offset;
+        if(line >= buffer->num_rows) {
             mvaddwstr(y,0,L"~");
         } else {
-            mvaddwstr(y,0,buffer->rows[y].chars);
+            mvaddwstr(y,0,buffer->rows[line].render);
         }
+        clrtoeol();
     }
 
     out_status_bar(L" File: %ls --- X:%d Y:%d W:%d H:%d", buffer->filename == NULL ? L"[No name]" : buffer->filename, buffer->cursor_x, buffer->cursor_y, ES.screen_cols, ES.screen_rows);

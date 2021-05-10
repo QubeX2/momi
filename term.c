@@ -55,6 +55,7 @@ void term_init()
 
     ES.config.use_spaces_as_tabs = true;
     ES.config.spaces_as_tab_count = 8;
+    ES.config.space_wchar = ' ';
 }
 
 void term_close()
