@@ -49,13 +49,11 @@ void term_init()
 
     ES.edit_rows = ES.screen_rows - 2;
     ES.edit_cols = ES.screen_cols;
-    ES.cursor_x = 0;
-    ES.cursor_y = 0;
-    ES.row_offset = 0;
-    ES.num_rows = 0;
-    ES.dirty = 0;
+
+    // create empty buffer
+    buffer_insert(0);
+
     ES.config.use_spaces_as_tabs = true;
-    ES.filename = NULL;
     ES.config.spaces_as_tab_count = 8;
 }
 

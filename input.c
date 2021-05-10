@@ -9,6 +9,7 @@
 #include "edit.h"
 #include "term.h"
 #include "output.h"
+#include "buffer.h"
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -23,7 +24,12 @@ void in_process_keypress()
     const char *name = key_name(ch);
     out_status_message(L"KEY: %s, %c, %d", name, ch, ch);
 
-    row_st *row = ES.cursor_y < ES.num_rows ? &ES.rows[ES.cursor_y] : NULL;
+    buffer_st *buffer = buffer_get_current();
+    if(buffer == NULL) {
+        term_die("buffer");
+    };
+
+    row_st *row = buffer->cursor_y < buffer->num_rows ? &buffer->rows[buffer->cursor_y] : NULL;
 
     switch(ch) {
         case CTRL_KEY('q'):
@@ -32,46 +38,46 @@ void in_process_keypress()
             break;
 
         case KEY_UP:
-            if(ES.cursor_y > 0) {
-                ES.cursor_y--;
+            if(buffer->cursor_y > 0) {
+                buffer->cursor_y--;
             }
             break;
 
         case KEY_DOWN:
-            if(ES.cursor_y < ES.num_rows) {
-                ES.cursor_y++;
+            if(buffer->cursor_y < buffer->num_rows) {
+                buffer->cursor_y++;
             }
             break;
 
         case KEY_LEFT:
-            if(ES.cursor_x != 0) {
-                ES.cursor_x--;
-            } else if (ES.cursor_y > 0) {
-                ES.cursor_y--;
-                if(ES.cursor_y < ES.num_rows) {
-                    ES.cursor_x = ES.rows[ES.cursor_y].csize;
+            if(buffer->cursor_x != 0) {
+                buffer->cursor_x--;
+            } else if (buffer->cursor_y > 0) {
+                buffer->cursor_y--;
+                if(buffer->cursor_y < buffer->num_rows) {
+                    buffer->cursor_x = buffer->rows[buffer->cursor_y].csize;
                 } else {
-                    ES.cursor_x = 0;
+                    buffer->cursor_x = 0;
                 }
             }
             break;
 
         case KEY_RIGHT:
-            if(row && ES.cursor_x < row->csize) {
-                ES.cursor_x++;
-            } else if(row && ES.cursor_x == row->csize) {
-                ES.cursor_y++;
-                ES.cursor_x = 0;
+            if(row && buffer->cursor_x < row->csize) {
+                buffer->cursor_x++;
+            } else if(row && buffer->cursor_x == row->csize) {
+                buffer->cursor_y++;
+                buffer->cursor_x = 0;
             }
             break;
 
     }
 
     // snap x to end of line
-    row = (ES.cursor_y < ES.num_rows) ? &ES.rows[ES.cursor_y] : NULL;
+    row = (buffer->cursor_y < buffer->num_rows) ? &buffer->rows[buffer->cursor_y] : NULL;
     uint32_t eol = row ? row->csize : 0;
-    if(ES.cursor_x > eol) {
-        ES.cursor_x = eol;
+    if(buffer->cursor_x > eol) {
+        buffer->cursor_x = eol;
     }
 
 }
