@@ -40,7 +40,7 @@ void out_rewdraw_screen()
         if(line >= buffer->num_rows) {
             mvaddwstr(y,0,L"~");
         } else {
-            mvaddwstr(y,0,buffer->rows[line].render);
+            mvaddwstr(y,0,buffer->rows[line].chars);
         }
         clrtoeol();
     }

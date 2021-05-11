@@ -14,8 +14,11 @@
 #include <time.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 #include "term.h"
 #include "edit.h"
+#include "keymap.h"
+#include "types.h"
 
 void term_die(const char *msg)
 {
@@ -56,6 +59,24 @@ void term_init()
     ES.config.use_spaces_as_tabs = true;
     ES.config.spaces_as_tab_count = 8;
     ES.config.space_wchar = ' ';
+
+    keymap_st keymap = {
+        KEY_LEFT,
+        KEY_RIGHT,
+        KEY_UP,
+        KEY_DOWN,
+        KEY_NPAGE,
+        KEY_PPAGE,
+        CTRL_KEY('q'),
+        CTRL_KEY('s'),
+        CTRL_KEY('c'),
+        CTRL_KEY('p'),
+        KEY_DC, // DELETE
+        127, // BACKSPACE
+        { 27, 79, 70 }, // END
+        { 27, 79, 72 }, // HOME
+    };
+    memcpy(&ES.config.keymap, &keymap, sizeof(keymap_st));
 }
 
 void term_close()

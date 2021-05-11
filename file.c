@@ -36,7 +36,7 @@ void file_open(char *filename)
             len--;
         }
         line[len] = '\0';
-        row_insert(buffer, buffer->num_rows, line, len);
+        row_add(buffer, buffer->num_rows, line, len);
     }
         
     free(line);
