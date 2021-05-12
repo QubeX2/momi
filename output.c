@@ -45,7 +45,14 @@ void out_rewdraw_screen()
         clrtoeol();
     }
 
-    out_status_bar(L" File: %ls --- X:%d Y:%d W:%d H:%d", buffer->filename == NULL ? L"[No name]" : buffer->filename, buffer->cursor_x, buffer->cursor_y, ES.screen_cols, ES.screen_rows);
+    out_status_bar(L" File: %ls%s --- X:%d Y:%d W:%d H:%d", 
+        buffer->filename == NULL ? L"[No name]" : buffer->filename, 
+        (buffer->dirty ? "*" : ""), 
+        buffer->cursor_x,
+        buffer->cursor_y,
+        ES.screen_cols,
+        ES.screen_rows
+    );
     move(buffer->cursor_y, buffer->cursor_x);
     out_refresh();
 }

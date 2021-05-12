@@ -16,7 +16,7 @@
  */
 void row_insert_wchar(row_st *row, uint32_t at, wchar_t c)
 {
-    if(at < 0 || at >= row->size) {
+    if(at < 0 || at > row->size) {
         return;
     }
 
@@ -32,7 +32,22 @@ void row_insert_wchar(row_st *row, uint32_t at, wchar_t c)
 /**
  * 
  */
-void row_add(buffer_st *buffer, uint32_t at, char *s, size_t len)
+void row_delete_wchar(row_st *row, uint32_t at)
+{
+    if(at < 0 || at >= row->size) {
+        return;
+    }
+
+    wmemmove(&row->chars[at], &row->chars[at + 1], row->size - at);
+
+    row->size--;
+    row->buffer->dirty++;
+}
+
+/**
+ * 
+ */
+void row_add_mbs(buffer_st *buffer, uint32_t at, char *s, size_t len)
 {
     if(at < 0L || at > buffer->num_rows) {
         return;
@@ -53,6 +68,60 @@ void row_add(buffer_st *buffer, uint32_t at, char *s, size_t len)
     buffer->rows[at].buffer = buffer;
     buffer->num_rows++;
     buffer->dirty++;
+}
+
+/**
+ * 
+ */
+void row_add_wcs(buffer_st *buffer, uint32_t at, wchar_t *s, size_t len) 
+{
+    if(at < 0L || at > buffer->num_rows) {
+        return;
+    }
+
+    // insert row in buffer->rows
+    buffer->rows = realloc(buffer->rows, sizeof(row_st) * (buffer->num_rows + 1));
+    memmove(&buffer->rows[at + 1], &buffer->rows[at], sizeof(row_st) * (buffer->num_rows - at));
+    row_proccess(&buffer->rows[at], s, len);
+
+    buffer->rows[at].buffer = buffer;
+    buffer->num_rows++;
+    buffer->dirty++;
+}
+
+/**
+ * 
+ */
+void row_delete(buffer_st* buffer, uint32_t at)
+{
+    if(at < 0 || at >= buffer->num_rows) {
+        return;
+    }
+
+    row_free(&buffer->rows[at]);
+    memmove(&buffer->rows[at], &buffer->rows[at + 1], sizeof(row_st) * (buffer->num_rows - at - 1));
+    buffer->num_rows--;
+    buffer->dirty++;
+}
+
+/**
+ * 
+ */
+uint32_t row_join(buffer_st *buffer, uint32_t to, uint32_t from)
+{
+    if(to < 0 || to >= buffer->num_rows || from < 0 || from >= buffer->num_rows) {
+        return -1;
+    }
+
+    row_st *row_to = &buffer->rows[to];
+    row_st *row_from = &buffer->rows[from];
+
+    uint32_t size = row_to->size;
+
+    row_to->chars = realloc(row_to->chars, (row_to->size + row_from->size + 1) * sizeof(wchar_t));
+    wmemcpy(&row_to->chars[row_to->size], &row_from->chars[0], row_from->size);
+    row_to->size += row_from->size;
+    return size;
 }
 
 /**
