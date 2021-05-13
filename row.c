@@ -16,7 +16,8 @@
  */
 void row_insert_wchar(row_st *row, uint32_t at, wchar_t c)
 {
-    if(at < 0 || at > row->size) {
+    if (at < 0 || at > row->size)
+    {
         return;
     }
 
@@ -26,7 +27,6 @@ void row_insert_wchar(row_st *row, uint32_t at, wchar_t c)
     row->chars[at] = c;
 
     row->buffer->dirty++;
-
 }
 
 /**
@@ -34,7 +34,8 @@ void row_insert_wchar(row_st *row, uint32_t at, wchar_t c)
  */
 void row_delete_wchar(row_st *row, uint32_t at)
 {
-    if(at < 0 || at >= row->size) {
+    if (at < 0 || at >= row->size)
+    {
         return;
     }
 
@@ -49,7 +50,8 @@ void row_delete_wchar(row_st *row, uint32_t at)
  */
 void row_add_mbs(buffer_st *buffer, uint32_t at, char *s, size_t len)
 {
-    if(at < 0L || at > buffer->num_rows) {
+    if (at < 0L || at > buffer->num_rows)
+    {
         return;
     }
 
@@ -58,8 +60,9 @@ void row_add_mbs(buffer_st *buffer, uint32_t at, char *s, size_t len)
     memmove(&buffer->rows[at + 1], &buffer->rows[at], sizeof(row_st) * (buffer->num_rows - at));
 
     wchar_t *chars = (wchar_t *)malloc((len + 1) * sizeof(wchar_t));
-    size_t size = mbstowcs(chars, s, len);   
-    if(size == (size_t)-1) {
+    size_t size = mbstowcs(chars, s, len);
+    if (size == (size_t)-1)
+    {
         term_die("row_insert");
     }
 
@@ -73,9 +76,10 @@ void row_add_mbs(buffer_st *buffer, uint32_t at, char *s, size_t len)
 /**
  * 
  */
-void row_add_wcs(buffer_st *buffer, uint32_t at, wchar_t *s, size_t len) 
+void row_add_wcs(buffer_st *buffer, uint32_t at, wchar_t *s, size_t len)
 {
-    if(at < 0L || at > buffer->num_rows) {
+    if (at < 0L || at > buffer->num_rows)
+    {
         return;
     }
 
@@ -92,9 +96,10 @@ void row_add_wcs(buffer_st *buffer, uint32_t at, wchar_t *s, size_t len)
 /**
  * 
  */
-void row_delete(buffer_st* buffer, uint32_t at)
+void row_delete(buffer_st *buffer, uint32_t at)
 {
-    if(at < 0 || at >= buffer->num_rows) {
+    if (at < 0 || at >= buffer->num_rows)
+    {
         return;
     }
 
@@ -109,7 +114,8 @@ void row_delete(buffer_st* buffer, uint32_t at)
  */
 uint32_t row_join(buffer_st *buffer, uint32_t to, uint32_t from)
 {
-    if(to < 0 || to >= buffer->num_rows || from < 0 || from >= buffer->num_rows) {
+    if (to < 0 || to >= buffer->num_rows || from < 0 || from >= buffer->num_rows)
+    {
         return -1;
     }
 
@@ -130,8 +136,10 @@ uint32_t row_join(buffer_st *buffer, uint32_t to, uint32_t from)
 void row_proccess(row_st *row, wchar_t *chars, size_t len)
 {
     uint16_t tabs = 0;
-    for(uint16_t i = 0; i < len; i++) {
-        if(chars[i] == '\t'){
+    for (uint16_t i = 0; i < len; i++)
+    {
+        if (chars[i] == '\t')
+        {
             tabs++;
         }
     }
@@ -142,15 +150,20 @@ void row_proccess(row_st *row, wchar_t *chars, size_t len)
     row->highlight = (wchar_t *)malloc(size);
 
     size_t idx = 0;
-    for(size_t i = 0; i < len; i++) {
-        if(chars[i] == '\t') {
+    for (size_t i = 0; i < len; i++)
+    {
+        if (chars[i] == '\t')
+        {
             row->special[idx] = '\t';
-            row->chars[idx++] = ES.config.space_wchar;
-            for(uint8_t j = 0;j < ES.config.spaces_as_tab_count - 1; j++) {
+            row->chars[idx++] = 0x2192; //ES.config.space_wchar;
+            for (uint8_t j = 0; j < ES.config.spaces_as_tab_count - 1; j++)
+            {
                 row->special[idx] = '\t';
                 row->chars[idx++] = ES.config.space_wchar;
             }
-        } else {
+        }
+        else
+        {
             row->special[idx] = '\0';
             row->chars[idx++] = chars[i];
         }
@@ -168,7 +181,7 @@ void row_proccess(row_st *row, wchar_t *chars, size_t len)
 void row_syntax(row_st *row)
 {
     row->highlight = realloc(row->highlight, row->size * sizeof(wchar_t));
-    wmemset(row->highlight, 0, row->size);    
+    wmemset(row->highlight, 0, row->size);
 }
 
 /**

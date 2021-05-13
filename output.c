@@ -13,17 +13,18 @@
  */
 void out_scroll()
 {
-    //buffer_st *buffer = buffer_get_current();
     /*
-    if(buffer->cursor_y < buffer->row_offset) {
+    buffer_st *buffer = buffer_get_current();
+
+    if (buffer->cursor_y < buffer->row_offset)
+    {
         buffer->row_offset = buffer->cursor_y;
     }
-    if(buffer->cursor_y >= buffer->row_offset + ES.edit_rows) {
+    if (buffer->cursor_y >= buffer->row_offset + ES.edit_rows)
+    {
         buffer->row_offset = buffer->cursor_y - ES.edit_rows + 1;
     }
     */
-    //out_status_message(L"row_offset: %d, cursor_y: %d", buffer->row_offset, buffer->cursor_y);
-
 }
 
 /**
@@ -35,24 +36,27 @@ void out_rewdraw_screen()
 
     buffer_st *buffer = buffer_get_current();
 
-    for(uint32_t y = 0; y < ES.edit_rows; y++) {
+    for (uint32_t y = 0; y < ES.edit_rows; y++)
+    {
         uint32_t line = y + buffer->row_offset;
-        if(line >= buffer->num_rows) {
-            mvaddwstr(y,0,L"~");
-        } else {
-            mvaddwstr(y,0,buffer->rows[line].chars);
+        if (line >= buffer->num_rows)
+        {
+            mvaddwstr(y, 0, L"~");
+        }
+        else
+        {
+            mvaddwstr(y, 0, buffer->rows[line].chars);
         }
         clrtoeol();
     }
 
-    out_status_bar(L" File: %ls%s --- X:%d Y:%d W:%d H:%d", 
-        buffer->filename == NULL ? L"[No name]" : buffer->filename, 
-        (buffer->dirty ? "*" : ""), 
-        buffer->cursor_x,
-        buffer->cursor_y,
-        ES.screen_cols,
-        ES.screen_rows
-    );
+    out_status_bar(L" File: %ls%s --- X:%d Y:%d W:%d H:%d",
+                   buffer->filename == NULL ? L"[No name]" : buffer->filename,
+                   (buffer->dirty ? "*" : ""),
+                   buffer->cursor_x,
+                   buffer->cursor_y,
+                   ES.screen_cols,
+                   ES.screen_rows);
     move(buffer->cursor_y, buffer->cursor_x);
     out_refresh();
 }
@@ -71,8 +75,10 @@ void out_status_bar(const wchar_t *fmt, ...)
     vswprintf(msg, sizeof(msg), fmt, ap);
     va_end(ap);
 
-    for(uint32_t i=0;i<ES.screen_cols;i++) {
-        if(msg[i] == '\0') {
+    for (uint32_t i = 0; i < ES.screen_cols; i++)
+    {
+        if (msg[i] == '\0')
+        {
             msg[i] = ' ';
         }
     }
@@ -81,10 +87,10 @@ void out_status_bar(const wchar_t *fmt, ...)
     mvaddwstr(ES.screen_rows - 2, 0, msg);
     attroff(COLOR_PAIR(1));
 
-    if(time(NULL) - buffer->status_msg_time < 5) {
+    if (time(NULL) - buffer->status_msg_time < 5)
+    {
         mvaddwstr(ES.screen_rows - 1, 0, buffer->status_msg);
     }
-
 }
 
 /**
@@ -101,8 +107,10 @@ void out_status_message(const wchar_t *fmt, ...)
     vswprintf(buffer->status_msg, size, fmt, ap);
     va_end(ap);
 
-    for(int i=0; i< (int) size; i++) {
-        if(buffer->status_msg[i] == '\0') {
+    for (int i = 0; i < (int)size; i++)
+    {
+        if (buffer->status_msg[i] == '\0')
+        {
             buffer->status_msg[i] = ' ';
         }
     }
@@ -113,6 +121,7 @@ void out_status_message(const wchar_t *fmt, ...)
 /**
  * 
  */
-void out_refresh() {
+void out_refresh()
+{
     //refresh();
 }
