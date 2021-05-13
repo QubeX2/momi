@@ -68,7 +68,7 @@ static int _in_get_special_sequence(wint_t ch0, wint_t *ch1, wint_t *ch2, wint_t
 void in_move_cursor(int direction)
 {
     buffer_st *buffer = buffer_get_current();
-    row_st *row = buffer->cursor_y < buffer->num_rows ? &buffer->rows[buffer->cursor_y] : NULL;
+    row_st *row = buffer->current_line < buffer->num_rows ? &buffer->rows[buffer->current_line] : NULL;
 
     if (direction == ES.config.keymap.key_up)
     {
@@ -146,6 +146,8 @@ void in_move_cursor(int direction)
             buffer->cursor_x = 0;
         }
     }
+
+    buffer->current_line = buffer->cursor_y + buffer->row_offset;
 }
 
 /**
@@ -169,7 +171,7 @@ void in_process_keypress()
     {
         term_die("buffer");
     };
-    row_st *row = buffer->cursor_y < buffer->num_rows ? &buffer->rows[buffer->cursor_y] : NULL;
+    row_st *row = buffer->current_line < buffer->num_rows ? &buffer->rows[buffer->current_line] : NULL;
     keymap_st keymap = ES.config.keymap;
 
     if (ch0 == keymap.key_quit)
@@ -235,17 +237,17 @@ void in_process_keypress()
     {
         if (buffer->cursor_x == 0 && row->size == 0)
         {
-            row_delete(buffer, buffer->cursor_y);
+            row_delete(buffer, buffer->current_line);
         }
         else
         {
             row_delete_wchar(row, buffer->cursor_x);
         }
 
-        if (buffer->cursor_x == row->size && row->size > 0 && (buffer->cursor_y + 1) < buffer->num_rows)
+        if (buffer->cursor_x == row->size && row->size > 0 && (buffer->current_line + 1) < buffer->num_rows)
         {
-            row_join(buffer, buffer->cursor_y, buffer->cursor_y + 1);
-            row_delete(buffer, buffer->cursor_y + 1);
+            row_join(buffer, buffer->current_line, buffer->current_line + 1);
+            row_delete(buffer, buffer->current_line + 1);
         }
         is_handled = true;
     }
@@ -259,16 +261,16 @@ void in_process_keypress()
         }
         else
         {
-            if (row->size > 0 && buffer->cursor_y > 0)
+            if (row->size > 0 && buffer->current_line > 0)
             {
-                uint32_t o_size = row_join(buffer, buffer->cursor_y - 1, buffer->cursor_y);
-                row_delete(buffer, buffer->cursor_y);
+                uint32_t o_size = row_join(buffer, buffer->current_line - 1, buffer->current_line);
+                row_delete(buffer, buffer->current_line);
                 buffer->cursor_x = o_size;
-                buffer->cursor_y--;
+                in_move_cursor(keymap.key_up);
             }
             else
             {
-                row_delete(buffer, buffer->cursor_y);
+                row_delete(buffer, buffer->current_line);
                 in_move_cursor(keymap.key_left);
             }
         }
@@ -305,14 +307,14 @@ void in_process_keypress()
 
     if ((iswalnum(ch0) || iswspace(ch0) || iswpunct(ch0)) && is_handled == false && row)
     {
-        row_insert_wchar(row, buffer->row_offset, ch0);
+        row_insert_wchar(row, buffer->cursor_x, ch0);
         buffer->cursor_x++;
     }
 
     out_status_message(L"KEY COMBO: %d, %d, %d, %d | 0%o, 0%o, 0%o, 0%o, 0%o", ch0, ch1, ch2, ch3, ch4, ch0, ch1, ch2, ch3);
 
     // snap x to end of line
-    row = (buffer->cursor_y < buffer->num_rows) ? &buffer->rows[buffer->cursor_y] : NULL;
+    row = (buffer->current_line < buffer->num_rows) ? &buffer->rows[buffer->current_line] : NULL;
     uint32_t eol = row ? row->size : 0;
     if (buffer->cursor_x > eol)
     {

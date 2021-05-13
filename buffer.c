@@ -18,6 +18,7 @@ void buffer_insert(uint32_t at)
     ES.buffers[ES.cur_buf].cursor_x = 0;
     ES.buffers[ES.cur_buf].cursor_y = 0;
     ES.buffers[ES.cur_buf].row_offset = 0;
+    ES.buffers[ES.cur_buf].current_line = 0;
     ES.buffers[ES.cur_buf].num_rows = 0;
     ES.buffers[ES.cur_buf].dirty = 0;
     ES.buffers[ES.cur_buf].rows = NULL;

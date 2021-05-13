@@ -11,29 +11,8 @@
 /**
  * 
  */
-void out_scroll()
-{
-    /*
-    buffer_st *buffer = buffer_get_current();
-
-    if (buffer->cursor_y < buffer->row_offset)
-    {
-        buffer->row_offset = buffer->cursor_y;
-    }
-    if (buffer->cursor_y >= buffer->row_offset + ES.edit_rows)
-    {
-        buffer->row_offset = buffer->cursor_y - ES.edit_rows + 1;
-    }
-    */
-}
-
-/**
- * 
- */
 void out_rewdraw_screen()
 {
-    out_scroll();
-
     buffer_st *buffer = buffer_get_current();
 
     for (uint32_t y = 0; y < ES.edit_rows; y++)
@@ -50,13 +29,16 @@ void out_rewdraw_screen()
         clrtoeol();
     }
 
-    out_status_bar(L" File: %ls%s --- X:%d Y:%d W:%d H:%d",
-                   buffer->filename == NULL ? L"[No name]" : buffer->filename,
-                   (buffer->dirty ? "*" : ""),
-                   buffer->cursor_x,
-                   buffer->cursor_y,
-                   ES.screen_cols,
-                   ES.screen_rows);
+    out_status_bar(L" File: %ls%s --- X:%d Y:%d W:%d H:%d O:%d C:%d",
+                        buffer->filename == NULL ? L"[No name]" : buffer->filename,
+                        (buffer->dirty ? "*" : ""),
+                        buffer->cursor_x,
+                        buffer->cursor_y,
+                        ES.screen_cols,
+                        ES.screen_rows,
+                        buffer->row_offset,
+                        buffer->current_line
+                   );
     move(buffer->cursor_y, buffer->cursor_x);
     out_refresh();
 }

@@ -18,6 +18,7 @@ typedef struct buffer_st {
     uint32_t cursor_y;
     uint32_t num_rows;
     uint32_t row_offset;
+    uint32_t current_line;    
     uint32_t dirty;
     row_st *rows;
     wchar_t status_msg[80];
