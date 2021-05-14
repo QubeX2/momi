@@ -30,7 +30,7 @@ void buffer_insert(uint32_t at)
  */
 buffer_st *buffer_get_current()
 {
-    return (ES.cur_buf >= 0 && ES.cur_buf < ES.num_buffers) ? &ES.buffers[ES.cur_buf] : NULL;
+    return (ES.cur_buf < ES.num_buffers) ? &ES.buffers[ES.cur_buf] : NULL;
 }
 
 /**
@@ -38,5 +38,5 @@ buffer_st *buffer_get_current()
  */
 buffer_st *buffer_get_at(uint32_t at)
 {
-    return (at >= 0 && at < ES.num_buffers) ? &ES.buffers[at] : NULL;
+    return (at < ES.num_buffers) ? &ES.buffers[at] : NULL;
 }

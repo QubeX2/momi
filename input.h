@@ -5,6 +5,8 @@
 #ifndef __INPUT_H__
 #define __INPUT_H__
 
+#include <wchar.h>
+
 enum input_special_key_e {
     kKey_shift_right = 1000,
     kKey_shift_left,
@@ -15,6 +17,6 @@ enum input_special_key_e {
 };
 
 void in_process_keypress();
-void in_move_cursor(int direction);
+void in_move_cursor(wint_t direction);
 
 #endif /* __INPUT_H__ */

@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <wchar.h>
+#include <time.h>
 #include "types.h"
 #include "row.h"
 

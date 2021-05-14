@@ -16,7 +16,7 @@
  */
 void row_insert_wchar(row_st *row, uint32_t at, wchar_t c)
 {
-    if (at < 0 || at > row->size)
+    if (at > row->size)
     {
         return;
     }
@@ -34,7 +34,7 @@ void row_insert_wchar(row_st *row, uint32_t at, wchar_t c)
  */
 void row_delete_wchar(row_st *row, uint32_t at)
 {
-    if (at < 0 || at >= row->size)
+    if (at >= row->size)
     {
         return;
     }
@@ -50,7 +50,7 @@ void row_delete_wchar(row_st *row, uint32_t at)
  */
 void row_add_mbs(buffer_st *buffer, uint32_t at, char *s, size_t len)
 {
-    if (at < 0L || at > buffer->num_rows)
+    if (at > buffer->num_rows)
     {
         return;
     }
@@ -78,7 +78,7 @@ void row_add_mbs(buffer_st *buffer, uint32_t at, char *s, size_t len)
  */
 void row_add_wcs(buffer_st *buffer, uint32_t at, wchar_t *s, size_t len)
 {
-    if (at < 0L || at > buffer->num_rows)
+    if (at > buffer->num_rows)
     {
         return;
     }
@@ -98,7 +98,7 @@ void row_add_wcs(buffer_st *buffer, uint32_t at, wchar_t *s, size_t len)
  */
 void row_delete(buffer_st *buffer, uint32_t at)
 {
-    if (at < 0 || at >= buffer->num_rows)
+    if (at >= buffer->num_rows)
     {
         return;
     }
@@ -114,7 +114,7 @@ void row_delete(buffer_st *buffer, uint32_t at)
  */
 uint32_t row_join(buffer_st *buffer, uint32_t to, uint32_t from)
 {
-    if (to < 0 || to >= buffer->num_rows || from < 0 || from >= buffer->num_rows)
+    if (to >= buffer->num_rows || from >= buffer->num_rows)
     {
         return -1;
     }

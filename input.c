@@ -65,7 +65,7 @@ static int _in_get_special_sequence(wint_t ch0, wint_t *ch1, wint_t *ch2, wint_t
 /**
  * 
  */
-void in_move_cursor(int direction)
+void in_move_cursor(wint_t direction)
 {
     buffer_st *buffer = buffer_get_current();
     row_st *row = buffer->current_line < buffer->num_rows ? &buffer->rows[buffer->current_line] : NULL;
