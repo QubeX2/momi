@@ -8,7 +8,29 @@
 #include <wchar.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
+#include <libgen.h>
+#include <ctype.h>
+#include "string.h"
+
+/**
+ *
+ */
+uint32_t file_get_extension_e(wchar_t *basename)
+{
+    wchar_t *ext = wcsrchr(basename, '.');
+    if(!ext) {
+        if(wcscmp(string_tolower(basename), L"makefile") == 0) {
+            return kMakefile;
+        } else {
+            if(wcscmp(string_tolower(ext + 1), L"c") == 0) {
+                return kC;
+            }
+        }
+    }
+    return kUnknown;
+}
 
 /**
  * 
@@ -17,9 +39,11 @@ void file_open(char *filename)
 {
     buffer_st *buffer = buffer_get_current();
 
-    size_t size = strlen(filename) + 1;   
+    char *name = basename(filename);
+
+    size_t size = strlen(name) + 1;   
     buffer->filename = (wchar_t*)malloc(size * sizeof(wchar_t));
-    size = mbstowcs(buffer->filename, filename, size);   
+    size = mbstowcs(buffer->filename, name, size);   
     if(size == (size_t)-1) {
         term_die("open file");
     }

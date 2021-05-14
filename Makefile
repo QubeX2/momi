@@ -4,20 +4,30 @@ CFLAGS= -Wall -Wextra -Werror -Wfloat-equal -ggdb -I/usr/local/opt/ncurses/inclu
 LFLAGS=-L/usr/local/opt/ncurses/lib
 LIBS=-lncursesw
 # LIBS= -lm
-SRCS=momi.c term.c row.c edit.c input.c output.c config.c file.c buffer.c
+SRCS=momi.c term.c row.c edit.c input.c output.c config.c file.c buffer.c string.c
 OBJS=$(SRCS:%.c=$(OUTDIR)/%.o)
-MAIN=momi
+SXOBJS=$(SYNTAX:%.c=$(OUTDIR)/%.o)
 OUTDIR=bin
+SYNTAX=sx_makefile.c
+SYNTAXDIR=syntax
+MAIN=momi
 
 .PHONY: depend clean
 
 all: $(MAIN)
 
-$(MAIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $(OUTDIR)/$(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
+$(MAIN): $(OBJS) $(SXOBJS)
+	$(CC) $(CFLAGS) -o $(OUTDIR)/$(MAIN) $(OBJS) $(SXOBJS) $(LFLAGS) $(LIBS)
 
-$(OUTDIR)/%.o: %.c
+$(OUTDIR)/%.o: %.c makedirs
 	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OUTDIR)/%.o: $(SYNTAXDIR)/%.c makedirs
+	$(CC) $(CFLAGS) -c $< -o $@
+
+
+makedirs:
+	@mkdir -p $(OUTDIR)
 
 clean:
 	$(RM) $(OUTDIR)/*.o *~ $(OUTDIR)/$(MAIN)

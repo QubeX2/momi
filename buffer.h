@@ -11,6 +11,14 @@
 #include "types.h"
 #include "row.h"
 
+enum extensions_e {
+    kUnknown = 0,
+    kMakefile,
+    kC,
+    kCpp,
+    kSh,
+    kPy
+};
 
 typedef struct buffer_st {
     uint32_t index;
@@ -23,6 +31,7 @@ typedef struct buffer_st {
     row_st *rows;
     wchar_t status_msg[80];
     time_t status_msg_time;
+    uint32_t extension;
     wchar_t *filename;
 } buffer_st;
 
